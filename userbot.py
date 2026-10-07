@@ -1,26 +1,27 @@
 import os
-from telethon import TelegramClient
+from telethon import TelegramClient, events
 from telethon.sessions import StringSession
 
-# معلومات التطبيق الخاصة بك
 API_ID = 2040
 API_HASH = "b18441a1ff607e10a989891a5462e627"
-
-# قراءة جلسة String Session من متغيرات النظام (GitHub Secrets)
 SESSION_STRING = os.environ.get("SESSION", "")
 
-# التحقق من أن الجلسة موجودة وليست فارغة
 if not SESSION_STRING:
     print("خطأ: لم يتم العثور على متغير SESSION أو أنه فارغ!")
     exit(1)
 
-# إنشاء عميل تليثون باستخدام الجلسة المخزنة
 client = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
 
 async def main():
-    # كود البوت الخاص بك يكتب هنا
     me = await client.get_me()
-    print(f"تم تسجيل الدخول بنجاح باسم: {me.first_name} (@{me.username})")
+    print(f"البوت يعمل الآن ومستمر في الاستماع باسم: {me.first_name} (@{me.username})")
+
+# مثال على أمر بسيط يستجيب له البوت (يمكنك إضافة أوامر الـ Userbot الخاصة بك هنا)
+@client.on(events.NewMessage(pattern='.صم', outgoing=True))
+async def handler(event):
+    await event.edit("أهلاً بك، أنا أعمل بنجاح على GitHub Actions! 🚀")
 
 with client:
     client.loop.run_until_complete(main())
+    # هذا السطر يمنع البوت من الإغلاق ويجعله شغالاً بشكل دائم
+    client.run_until_disconnected()
