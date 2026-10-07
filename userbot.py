@@ -1,16 +1,26 @@
 import os
 from telethon import TelegramClient
+from telethon.sessions import StringSession
 
-api_id = 2040
-api_hash = "b18441a1ff607e10a989891a5462e627"
-string_session = os.environ.get("SESSION", "")
+# معلومات التطبيق الخاصة بك
+API_ID = 2040
+API_HASH = "b18441a1ff607e10a989891a5462e627"
 
-client = TelegramClient(string_session, api_id, api_hash)
+# قراءة جلسة String Session من متغيرات النظام (GitHub Secrets)
+SESSION_STRING = os.environ.get("SESSION", "")
+
+# التحقق من أن الجلسة موجودة وليست فارغة
+if not SESSION_STRING:
+    print("خطأ: لم يتم العثور على متغير SESSION أو أنه فارغ!")
+    exit(1)
+
+# إنشاء عميل تليثون باستخدام الجلسة المخزنة
+client = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
 
 async def main():
-    print("تم تشغيل البوت بنجاح على GitHub Actions!")
+    # كود البوت الخاص بك يكتب هنا
+    me = await client.get_me()
+    print(f"تم تسجيل الدخول بنجاح باسم: {me.first_name} (@{me.username})")
 
-if __name__ == "__main__":
-    with client:
-        client.loop.run_until_complete(main())
-            
+with client:
+    client.loop.run_until_complete(main())
